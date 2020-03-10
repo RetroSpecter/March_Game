@@ -4,25 +4,32 @@ using UnityEngine;
 
 public class Car : MonoBehaviour
 {
-    Rigidbody rigid;
+    public Rigidbody sphereCollider;
     public float forwardVelocity = 10;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        rigid = GetComponent<Rigidbody>();
-    }
+    public float maximumVelocity = 100;
+    public float friction = 10;
+    public GameObject carModel;
 
     // Update is called once per frame
     void Update()
     {
+        carModel.transform.position = sphereCollider.transform.position;
         if (Input.GetKey(KeyCode.UpArrow)) {
-            rigid.AddForce(Vector3.forward * forwardVelocity * 100, ForceMode.Acceleration);
+            sphereCollider.AddForce(carModel.transform.forward * forwardVelocity * 10, ForceMode.Acceleration);
         }
 
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.DownArrow))
         {
-            rigid.AddForce(Vector3.right * forwardVelocity * 100, ForceMode.Acceleration);
+            sphereCollider.AddForce(-carModel.transform.forward * forwardVelocity * 10, ForceMode.Acceleration);
+        }
+
+        float horiz = Input.GetAxis("Horizontal");
+        carModel.transform.forward += carModel.transform.right * horiz * Time.deltaTime;
+
+        Vector2 vel = sphereCollider.velocity;
+        vel.y = 0;
+        if (vel.magnitude > maximumVelocity) {
+            sphereCollider.AddForce(-vel, ForceMode.VelocityChange);
         }
     }
 }
